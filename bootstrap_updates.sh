@@ -6,9 +6,11 @@ LOG_DIR="$HOME/SystemUpdates"
 REBOOT_FLAG="$LOG_DIR/reboot_in_progress"
 LOG_FILE="$LOG_DIR/unified_updates_$(date +%Y-%m-%d).log"
 
+# Create log directory
+mkdir -p "$LOG_DIR"
+
 # Only act if the reboot flag exists
 if [ -f "$REBOOT_FLAG" ]; then
-    mkdir -p "$LOG_DIR"
     echo "[$(date)] System rebooted; found flag. Resuming update cycle..." >> "$LOG_FILE"
     
     # Remove the flag immediately to prevent loop on crash

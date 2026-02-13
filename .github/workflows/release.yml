@@ -1,0 +1,35 @@
+name: "Release"
+
+on:
+  workflow_run:
+    workflows: [ "Generate Documentation" ]
+    types: [ completed ]
+    branches: [ main ]
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      
+      - name: "Determine Next Version"
+        id: version
+        uses: PaulHatch/semantic-version@v5.4.0
+        with:
+          tag_prefix: "v"
+          major_pattern: "(MAJOR)"
+          minor_pattern: "(MINOR)"
+          format: "${major}.${minor}.${patch}"
+      
+      - name: "Create GitHub Release"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release create "v${{ steps.version.outputs.version }}" \
+            --title "Release v${{ steps.version.outputs.version }}" \
+            --generate-notes

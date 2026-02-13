@@ -1,11 +1,16 @@
-# Local logs (if you mount volumes during testing)
-test_logs/
+# Logs and local state
 *.log
-
-# Reboot breadcrumbs & loop counters
+SystemUpdates/
 reboot_in_progress
 update_reboot_count
+test_logs/
 
-# System files
+# Credentials & Environment
+.env
+*.pem
+*.key
+.sudo_password
+
+# OS generated files
 .DS_Store
-__pycache__/
+.thumbs.db

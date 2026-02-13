@@ -24,10 +24,11 @@ RUN useradd -m -s /bin/bash testuser && \
     echo "testuser ALL=(ALL) NOPASSWD:ALL" >> /etc/sudoers
 
 USER testuser
+ENV USER=testuser
 WORKDIR /home/testuser
 
 # Install Homebrew
-RUN /bin/bash -c "$(curl -fsSL https://raw.githubusercontent.com)"
+RUN /bin/bash -c "$(curl --max-time 300 -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)" || /bin/bash -c "$(curl --max-time 300 -fsSL https://raw.githubusercontent.com/Homebrew/install/HEAD/install.sh)"
 ENV PATH="/home/linuxbrew/.linuxbrew/bin:${PATH}"
 
 # Setup repo structure

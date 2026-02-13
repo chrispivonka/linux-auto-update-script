@@ -1,0 +1,115 @@
+name: "Core Continuous Integration (CI)"
+
+on:
+  push:
+    branches: [ "**" ] # Run on all branches
+  pull_request:
+    branches: [ main ] # Only run on PRs targeting main
+
+jobs:
+  # Job 1: Static analysis of your Shell scripts and GitHub Actions
+  lint:
+    name: "Linting"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: "Run ShellCheck"
+        uses: ludeeus/action-shellcheck@master
+        with:
+          scandir: './' # Scans the whole repo for .sh files
+          severity: warning
+
+      - name: "Check GitHub Action Workflows"
+        uses: rhysd/actionlint@v1.7.1
+
+  # Job 2: Scanning for accidental secrets (runs in parallel with Lint)
+  gitleaks:
+    name: "Gitleaks Secret Scanning"
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0 # Clones entire history to scan all commits
+
+      - name: "Run Gitleaks"
+        uses: gitleaks/gitleaks-action@v2.3.9
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  # Job 3: Docker Build Check (runs after lint and gitleaks pass)
+  docker:
+    name: "Docker Build Check"
+    runs-on: ubuntu-latest
+    needs: [ lint, gitleaks ]
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Test Build
+        uses: docker/build-push-action@v6
+        with:
+          context: .
+          push: false
+          load: true # Load into local Docker daemon
+          tags: linux-auto-updater:test
+
+      - name: Run Container Tests
+        run: |
+          # Create reboot flag on host (will be visible in container via volume mount)
+          mkdir -p ${{ github.workspace }}/SystemUpdates
+          touch ${{ github.workspace }}/SystemUpdates/reboot_in_progress
+          
+          # Start container in background with proper volume mounts
+          docker run -d --name test-container \
+            -v ${{ github.workspace }}:/home/testuser/GitHub/linux-auto-update-script \
+            -v ${{ github.workspace }}/SystemUpdates:/home/testuser/SystemUpdates \
+            linux-auto-updater:test
+          
+          # Wait for update cycle to complete (max 90 seconds)
+          count=0
+          while [ $count -lt 90 ]; do
+            if docker logs test-container 2>&1 | grep -q "Update Cycle Finished"; then
+              break
+            fi
+            sleep 1
+            count=$((count+1))
+          done
+          
+          # Get and validate logs
+          docker logs test-container > /tmp/container.log 2>&1
+          
+          # Check for successful update cycle
+          if grep -q "Update Cycle Started" /tmp/container.log; then
+            echo "✓ Update cycle started successfully"
+          else
+            echo "✗ Update cycle did not start"
+            cat /tmp/container.log
+            exit 1
+          fi
+          
+          # Check for update completion
+          if grep -q "Update Cycle Finished" /tmp/container.log; then
+            echo "✓ Update cycle completed"
+          else
+            echo "✗ Update cycle did not complete"
+            cat /tmp/container.log
+            exit 1
+          fi
+          
+          # Check for excessive reboot attempts (more than 2 cycles = infinite loop)
+          CYCLE_COUNT=$(grep -c "Update Cycle Started" /tmp/container.log || echo 0)
+          if [ "$CYCLE_COUNT" -gt 2 ]; then
+            echo "✗ Detected infinite reboot loop: $CYCLE_COUNT cycles"
+            cat /tmp/container.log
+            exit 1
+          fi
+          
+          echo "✓ Container tests passed with $CYCLE_COUNT update cycle(s)"
+          
+          # Cleanup
+          docker stop test-container 2>/dev/null || true
+          docker rm test-container 2>/dev/null || true
