@@ -1,0 +1,11 @@
+# Local logs (if you mount volumes during testing)
+test_logs/
+*.log
+
+# Reboot breadcrumbs & loop counters
+reboot_in_progress
+update_reboot_count
+
+# System files
+.DS_Store
+__pycache__/
