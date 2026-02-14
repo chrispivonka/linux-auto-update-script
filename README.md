@@ -1,8 +1,8 @@
 # Linux Auto-Update Script
 
-![License: MIT](https://img.shields.io)
-![Platform: Linux](https://img.shields.io)
-![Shell: Bash](https://img.shields.io)
+![License: MIT](https://img.shields.io/badge/License-MIT-blue)
+![Platform: Linux](https://img.shields.io/badge/Platform-Linux-blue)
+![Shell: Bash](https://img.shields.io/badge/Shell-Bash-green)
 [![CI](https://github.com/chrispivonka/linux-auto-update-script/actions/workflows/ci.yml/badge.svg)](https://github.com/chrispivonka/linux-auto-update-script/actions/workflows/ci.yml)
 [![Docs](https://github.com/chrispivonka/linux-auto-update-script/actions/workflows/docs.yml/badge.svg)](https://github.com/chrispivonka/linux-auto-update-script/actions/workflows/docs.yml)
 [![Release](https://github.com/chrispivonka/linux-auto-update-script/actions/workflows/release.yml/badge.svg)](https://github.com/chrispivonka/linux-auto-update-script/actions/workflows/release.yml)

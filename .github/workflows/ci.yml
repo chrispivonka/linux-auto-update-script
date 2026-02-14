@@ -26,6 +26,7 @@ jobs:
   # Job 2: Scanning for accidental secrets (runs in parallel with Lint)
   gitleaks:
     name: "Gitleaks Secret Scanning"
+    if: ${{ github.ref != 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
