@@ -28,7 +28,7 @@ jobs:
         uses: vargiuscuola/genshdoc@v1
 
       - name: "Commit & Push Changes"
-        uses: stefanzweifel/git-auto-commit-action@v5
+        uses: stefanzweifel/git-auto-commit-action@v7
         with:
           commit_message: "docs: update automated documentation [skip ci]"
           commit_user_name: "github-actions[bot]"
