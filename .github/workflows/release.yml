@@ -2,7 +2,7 @@ name: "Release"
 
 on:
   workflow_run:
-    workflows: [ "Generate Documentation" ]
+    workflows: [ "Core Continuous Integration (CI)" ]
     types: [ completed ]
     branches: [ main ]
 

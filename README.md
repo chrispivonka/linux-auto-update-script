@@ -4,7 +4,6 @@
 ![Platform: Linux](https://img.shields.io/badge/Platform-Linux-blue)
 ![Shell: Bash](https://img.shields.io/badge/Shell-Bash-green)
 [![CI](https://github.com/chrispivonka/linux-auto-update-script/actions/workflows/ci.yml/badge.svg)](https://github.com/chrispivonka/linux-auto-update-script/actions/workflows/ci.yml)
-[![Docs](https://github.com/chrispivonka/linux-auto-update-script/actions/workflows/docs.yml/badge.svg)](https://github.com/chrispivonka/linux-auto-update-script/actions/workflows/docs.yml)
 [![Release](https://github.com/chrispivonka/linux-auto-update-script/actions/workflows/release.yml/badge.svg)](https://github.com/chrispivonka/linux-auto-update-script/actions/workflows/release.yml)
 
 A reliable, automated system to keep Ubuntu/Debian packages and Homebrew apps up to date. This script handles the entire lifecycle of an update, including automated reboots and post-reboot verification cycles.
@@ -42,13 +41,13 @@ To enable the daily check and the boot-time resumption, you must add the scripts
   ```bash
   sudo crontab -e
   ```
-  2. Add these two lines to the bottom (replace with your actual Linux username):
+  2. Add these two lines to the bottom:
   ```bash
     # 1. Resume update cycle on system boot if a reboot was just performed
-    @reboot /bin/bash /home/chris/GitHub/linux-auto-update-script/bootstrap_updates.sh
+    @reboot /bin/bash $HOME/GitHub/linux-auto-update-script/bootstrap_updates.sh
 
     # 2. Start the primary daily update check at 4:00 AM
-    0 4 * * * /bin/bash /home/chris/GitHub/linux-auto-update-script/update_script.sh
+    0 4 * * * /bin/bash $HOME/GitHub/linux-auto-update-script/update_script.sh
   ```
 
 ### 3. 🧪 Testing with Docker
