@@ -63,12 +63,15 @@ jobs:
         run: |
           # Create reboot flag on host (will be visible in container via volume mount)
           mkdir -p ${{ github.workspace }}/SystemUpdates
+          chmod -R a+rwX ${{ github.workspace }}/SystemUpdates
           touch ${{ github.workspace }}/SystemUpdates/reboot_in_progress
           
           # Start container in background with proper volume mounts
           docker run -d --name test-container \
             -v ${{ github.workspace }}:/home/testuser/GitHub/linux-auto-update-script \
             -v ${{ github.workspace }}/SystemUpdates:/home/testuser/SystemUpdates \
+            -e LOG_DIR=/home/testuser/SystemUpdates \
+            -e HOME=/home/testuser \
             linux-auto-updater:test
           
           # Wait for update cycle to complete (max 90 seconds)

@@ -35,19 +35,27 @@ chmod +x ~/GitHub/linux-auto-update-script/*.sh
 ```
 
 ### 2. Configure Automation (Crontab)
-To enable the daily check and the boot-time resumption, you must add the scripts to your system's root crontab. This allows apt to run without manual password entry.
+To enable the daily check and the boot-time resumption, you must add the scripts to your system's root crontab. This allows apt to run without manual password entry. Cron runs with a minimal environment, so use absolute paths.
 
   1. Open the crontab editor:
   ```bash
   sudo crontab -e
   ```
-  2. Add these two lines to the bottom:
+  2. Add these two lines to the bottom (replace the repo path with yours):
   ```bash
     # 1. Resume update cycle on system boot if a reboot was just performed
-    @reboot /bin/bash $HOME/GitHub/linux-auto-update-script/bootstrap_updates.sh
+    @reboot /bin/bash /home/youruser/GitHub/linux-auto-update-script/bootstrap_updates.sh
 
     # 2. Start the primary daily update check at 4:00 AM
-    0 4 * * * /bin/bash $HOME/GitHub/linux-auto-update-script/update_script.sh
+    0 4 * * * /bin/bash /home/youruser/GitHub/linux-auto-update-script/update_script.sh
+  ```
+  3. Optional overrides for non-standard setups:
+  ```bash
+    # Custom log location
+    LOG_DIR=/var/log/SystemUpdates
+
+    # Custom Homebrew path
+    BREW_PATH=/home/linuxbrew/.linuxbrew/bin/brew
   ```
 
 ### 3. 🧪 Testing with Docker

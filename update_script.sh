@@ -3,10 +3,45 @@
 # Best Practice: Stop if an undefined variable is used
 set -u
 
+resolve_home_dir() {
+    local user="$1"
+    local home_dir=""
+
+    if command -v getent &> /dev/null; then
+        home_dir=$(getent passwd "$user" | cut -d: -f6)
+    else
+        home_dir=$(awk -F: -v u="$user" '$1==u {print $6}' /etc/passwd)
+    fi
+
+    echo "$home_dir"
+}
+
+resolve_brew_user() {
+    local brew_path="$1"
+    local owner=""
+
+    if command -v stat &> /dev/null; then
+        owner=$(stat -c %U "$brew_path" 2>/dev/null || true)
+    fi
+
+    if [ -n "$owner" ] && [ "$owner" != "root" ]; then
+        echo "$owner"
+        return
+    fi
+
+    echo "$RUN_USER"
+}
+
 # 1. Setup Paths
-LOG_DIR="/home/chris/SystemUpdates"
+RUN_USER="${SUDO_USER:-${LOGNAME:-$(id -un)}}"
+HOME_DIR="${HOME:-$(resolve_home_dir "$RUN_USER")}"
+
+if [ -z "$HOME_DIR" ]; then
+    HOME_DIR="/root"
+fi
+
+LOG_DIR="${LOG_DIR:-"$HOME_DIR/SystemUpdates"}"
 REBOOT_FLAG="$LOG_DIR/reboot_in_progress"
-CURRENT_USER="chris"
 mkdir -p "$LOG_DIR"
 
 # Daily Log File
@@ -27,12 +62,13 @@ sudo DEBIAN_FRONTEND=noninteractive apt-get upgrade -yq --with-new-pkgs
 sudo apt-get autoremove -y
 
 # 3. Update Homebrew (Brew)
-BREW_PATH="/home/linuxbrew/.linuxbrew/bin/brew"
+BREW_PATH="${BREW_PATH:-$(command -v brew 2>/dev/null || echo /home/linuxbrew/.linuxbrew/bin/brew)}"
 echo "Step 2: Updating Homebrew..."
 if [ -f "$BREW_PATH" ]; then
-    sudo -u "$CURRENT_USER" "$BREW_PATH" update
-    sudo -u "$CURRENT_USER" "$BREW_PATH" upgrade
-    sudo -u "$CURRENT_USER" "$BREW_PATH" cleanup
+    BREW_USER="$(resolve_brew_user "$BREW_PATH")"
+    sudo -H -u "$BREW_USER" "$BREW_PATH" update
+    sudo -H -u "$BREW_USER" "$BREW_PATH" upgrade
+    sudo -H -u "$BREW_USER" "$BREW_PATH" cleanup
 else
     echo "Homebrew not found, skipping."
 fi

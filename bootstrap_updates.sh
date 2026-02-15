@@ -1,8 +1,28 @@
 #!/bin/bash
 
-REPO_DIR="/home/chris/GitHub/linux-auto-update-script"
+resolve_home_dir() {
+    local user="$1"
+    local home_dir=""
+
+    if command -v getent &> /dev/null; then
+        home_dir=$(getent passwd "$user" | cut -d: -f6)
+    else
+        home_dir=$(awk -F: -v u="$user" '$1==u {print $6}' /etc/passwd)
+    fi
+
+    echo "$home_dir"
+}
+
+RUN_USER="${SUDO_USER:-${LOGNAME:-$(id -un)}}"
+HOME_DIR="${HOME:-$(resolve_home_dir "$RUN_USER")}"
+
+if [ -z "$HOME_DIR" ]; then
+    HOME_DIR="/root"
+fi
+
+REPO_DIR="${REPO_DIR:-$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)}"
 UPDATE_SCRIPT="$REPO_DIR/update_script.sh"
-LOG_DIR="/home/chris/SystemUpdates"
+LOG_DIR="${LOG_DIR:-"$HOME_DIR/SystemUpdates"}"
 REBOOT_FLAG="$LOG_DIR/reboot_in_progress"
 LOG_FILE="$LOG_DIR/unified_updates_$(date +%Y-%m-%d).log"
 
