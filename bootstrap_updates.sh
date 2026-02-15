@@ -1,8 +1,8 @@
 #!/bin/bash
 
-REPO_DIR="$HOME/GitHub/linux-auto-update-script"
+REPO_DIR="/home/chris/GitHub/linux-auto-update-script"
 UPDATE_SCRIPT="$REPO_DIR/update_script.sh"
-LOG_DIR="$HOME/SystemUpdates"
+LOG_DIR="/home/chris/SystemUpdates"
 REBOOT_FLAG="$LOG_DIR/reboot_in_progress"
 LOG_FILE="$LOG_DIR/unified_updates_$(date +%Y-%m-%d).log"
 

@@ -4,8 +4,9 @@
 set -u
 
 # 1. Setup Paths
-LOG_DIR="$HOME/SystemUpdates"
+LOG_DIR="/home/chris/SystemUpdates"
 REBOOT_FLAG="$LOG_DIR/reboot_in_progress"
+CURRENT_USER="chris"
 mkdir -p "$LOG_DIR"
 
 # Daily Log File
@@ -29,7 +30,6 @@ sudo apt-get autoremove -y
 BREW_PATH="/home/linuxbrew/.linuxbrew/bin/brew"
 echo "Step 2: Updating Homebrew..."
 if [ -f "$BREW_PATH" ]; then
-    CURRENT_USER=${SUDO_USER:-$USER}
     sudo -u "$CURRENT_USER" "$BREW_PATH" update
     sudo -u "$CURRENT_USER" "$BREW_PATH" upgrade
     sudo -u "$CURRENT_USER" "$BREW_PATH" cleanup
