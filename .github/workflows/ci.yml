@@ -21,7 +21,7 @@ jobs:
           severity: warning
 
       - name: "Check GitHub Action Workflows"
-        uses: rhysd/actionlint@v1.7.10
+        uses: rhysd/actionlint@v1.7.11
 
   # Job 2: Scanning for accidental secrets (runs in parallel with Lint)
   gitleaks:
