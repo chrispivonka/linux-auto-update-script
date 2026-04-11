@@ -21,7 +21,7 @@ jobs:
           severity: warning
 
       - name: "Check GitHub Action Workflows"
-        uses: rhysd/actionlint@v1.7.10
+        uses: rhysd/actionlint@v1.7.12
 
   # Job 2: Scanning for accidental secrets (runs in parallel with Lint)
   gitleaks:
@@ -52,7 +52,7 @@ jobs:
         uses: docker/setup-buildx-action@v4
 
       - name: Test Build
-        uses: docker/build-push-action@v6
+        uses: docker/build-push-action@v7
         with:
           context: .
           push: false
