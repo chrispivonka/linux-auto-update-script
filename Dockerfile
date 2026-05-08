@@ -9,7 +9,7 @@
 #
 #   3. Simulate a Reboot Requirement: While the container is running (or before you start it), manually create the reboot file inside the container to see the cycle trigger: sudo touch /var/run/reboot-required.
 
-FROM ubuntu:24.04
+FROM ubuntu:26.04
 
 # Prevent interactive prompts during build
 ENV DEBIAN_FRONTEND=noninteractive
