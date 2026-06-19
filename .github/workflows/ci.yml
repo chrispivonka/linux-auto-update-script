@@ -12,7 +12,7 @@ jobs:
     name: "Linting"
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
 
       - name: "Run ShellCheck"
         uses: ludeeus/action-shellcheck@master
@@ -29,7 +29,7 @@ jobs:
     if: ${{ github.ref != 'refs/heads/main' }}
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v6
+      - uses: actions/checkout@v7
         with:
           fetch-depth: 0 # Clones entire history to scan all commits
 
@@ -46,7 +46,7 @@ jobs:
     if: ${{ !cancelled() && (needs.lint.result == 'success') && (needs.gitleaks.result == 'success' || needs.gitleaks.result == 'skipped') }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v4
