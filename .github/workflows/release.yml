@@ -19,7 +19,7 @@ jobs:
       
       - name: "Determine Next Version"
         id: version
-        uses: PaulHatch/semantic-version@v6.0.3
+        uses: PaulHatch/semantic-version@v6.0.4
         with:
           tag_prefix: "v"
           major_pattern: "(MAJOR)"
